@@ -22,7 +22,7 @@ const buildControls = (props) => {
     })
 
     return <div className={classes.BuildControls}>
-        <p>Current Price: {props.totalPrice}</p>
+        <p>Current Price: <strong>{props.totalPrice.toFixed(2)}</strong></p>
         {controlElems}
     </div>
 }
