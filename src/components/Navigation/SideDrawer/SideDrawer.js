@@ -4,6 +4,7 @@ import Logo from '../../Logo/Logo';
 import NavigationItems from '../NavigationItems/NavigationItems';
 import Backdrop from '../../UI/Backdrop/Backdrop';
 import classes from './SideDrawer.module.css';
+import PropTypes from 'prop-types';
 
 const sideDrawer = (props) => {
     const attachedClasses = [classes.SideDrawer, props.show ? classes.Open : classes.Close];
@@ -25,6 +26,10 @@ const sideDrawer = (props) => {
             </div>
         </React.Fragment>
     );
+}
+
+sideDrawer.propTypes = {
+    show: PropTypes.bool.isRequired
 }
 
 export default sideDrawer;
