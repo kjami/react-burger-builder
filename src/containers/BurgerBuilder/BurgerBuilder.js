@@ -5,32 +5,20 @@ import BuildControls from '../../components/Burger/BuildControls/BuildControls';
 import Modal from '../../components/UI/Modal/Modal';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
-
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import axios from '../../axios-orders';
 
-const INGREDIENT_PRICES = {
-    salad: 0.5,
-    cheese: 0.4,
-    meat: 1.3,
-    bacon: 0.7
-};
-
 class BurgerBuilder extends React.Component {
     state = {
-        ingredients: {
-            salad: 0,
-            bacon: 0, 
-            cheese: 0,
-            meat: 0
-        },
+        ingredientPrices: null,
+        ingredients:null,
         totalPrice: 4,
         purchasable: false,
         showOrderSummary: false,
         isOrderPosting: false
     };
 
-    updatePurchaseState(ingredients)  {
+    updatePurchaseState(ingredients) {
         for (let key in ingredients) {
             if (ingredients[key] > 0) {
                 this.setState({
@@ -39,10 +27,48 @@ class BurgerBuilder extends React.Component {
                 return;
             }
         }
-         
+
         this.setState({
             purchasable: false
         });
+    }
+
+    componentDidMount() {
+        axios.get('/ingredientPrice.json')
+            .then(priceResponse => {
+                this.setState({
+                    ingredientPrices: priceResponse.data
+                });
+                axios.get('/ingredients.json')
+                    .then(response => {
+                        this.setState({
+                            ingredients: response.data,
+                            totalPrice: this.updateBurgerPrice(response.data)
+                        });
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+
+    updateBurgerPrice = (ingredients) => {
+        const ingredientPrices = this.state.ingredientPrices;
+
+        let price = Object.keys(ingredients)
+        .map(name => {
+            return ingredients[name] * ingredientPrices[name];
+        })
+        .reduce((sum, num) => {
+            return sum + num;
+        }, 0);
+
+        price += 4;
+
+        return price;
     }
  
     addIngredientHandler = (type) => {
@@ -51,12 +77,12 @@ class BurgerBuilder extends React.Component {
         };
         ingredients[type] += 1;
 
-        let price = this.state.totalPrice;
-        let ingredientPrice = INGREDIENT_PRICES[type];
-        price += ingredientPrice;
+        // let price = this.state.totalPrice;
+        // let ingredientPrice = this.state.ingredientPrices[type];
+        // price += ingredientPrice;
         this.setState({
             ingredients: ingredients,
-            totalPrice: price
+            totalPrice: this.updateBurgerPrice(ingredients)
         });
         this.updatePurchaseState(ingredients);
     }
@@ -68,12 +94,13 @@ class BurgerBuilder extends React.Component {
         ingredients[type] -= 1;
         ingredients[type]= ingredients[type] < 0 ? 0 : ingredients[type];
 
-        let price = this.state.totalPrice;
-        let ingredientPrice = INGREDIENT_PRICES[type];
-        price -= ingredientPrice;
+        // let price = this.state.totalPrice;
+        // let ingredientPrice = this.state.ingredientPrices[type];
+        // price -= ingredientPrice;
         this.setState({
             ingredients: ingredients,
-            totalPrice: price
+            // totalPrice: price
+            totalPrice: this.updateBurgerPrice(ingredients)
         });
         this.updatePurchaseState(ingredients);
     }
@@ -133,15 +160,35 @@ class BurgerBuilder extends React.Component {
             disabledInfo[key] = disabledInfo[key] <= 0;
         }
 
-        let orderSummary = <OrderSummary
-            ingredients={this.state.ingredients}
-            continued={this.continueOrderNowHandler}
-            cancelled={this.closeOrderNowHandler}
-            totalPrice={this.state.totalPrice.toFixed(2)}
-        />;
+        let orderSummary = (<p></p>);
+        
+        if (this.state.ingredients && this.state.ingredientPrices) {
+            orderSummary = <OrderSummary
+                ingredients={this.state.ingredients}
+                continued={this.continueOrderNowHandler}
+                cancelled={this.closeOrderNowHandler}
+                totalPrice={this.state.totalPrice.toFixed(2)}
+            />;
 
-        if (this.state.isOrderPosting) {
-            orderSummary = <Spinner />;
+            if (this.state.isOrderPosting) {
+                orderSummary = <Spinner />;
+            }
+        }
+
+        let burger = (<Spinner/>);
+
+        if (this.state.ingredients && this.state.ingredientPrices) {
+            burger = (<React.Fragment>
+                <Burger ingredients={this.state.ingredients} />
+                <BuildControls
+                    added={this.addIngredientHandler}
+                    removed={this.removeIngredientHandler}
+                    disabledInfo={disabledInfo}
+                    totalPrice={this.state.totalPrice}
+                    purchasable={this.state.purchasable}
+                    orderNow={this.orderNowHandler}
+                />
+            </React.Fragment>);
         }
 
         return (
@@ -151,15 +198,7 @@ class BurgerBuilder extends React.Component {
                     modalClosed={this.closeOrderNowHandler}>
                     {orderSummary}
                 </Modal>
-                <Burger ingredients={this.state.ingredients} />
-                <BuildControls
-                    added={this.addIngredientHandler}
-                    removed={this.removeIngredientHandler}
-                    disabledInfo={disabledInfo}
-                    totalPrice={this.state.totalPrice}
-                    purchasable={this.state.purchasable}
-                    orderNow={this.orderNowHandler}
-                    />
+                {burger}
             </React.Fragment>
         );
     }
