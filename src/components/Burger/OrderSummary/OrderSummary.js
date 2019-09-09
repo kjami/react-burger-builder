@@ -9,7 +9,7 @@ const orderSummary = (props) => {
     });
 
     return (
-        <React.Fragment>
+        <div style={{overflow: 'auto'}}>
             <h3>Your Order</h3>
             <p>Your delicious burger has the following ingredients:</p>
             <ul>
@@ -19,7 +19,7 @@ const orderSummary = (props) => {
             <p>Want to Checkout?</p>
             <Button btnType="Danger" clicked={props.cancelled}>Cancel</Button>
             <Button btnType="Success" clicked={props.continued}>Continue</Button>
-        </React.Fragment>
+        </div>
     )
 }
 

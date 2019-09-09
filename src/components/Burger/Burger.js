@@ -14,7 +14,7 @@ const burger = (props) => {
     if (!ingredients.length) {
         ingredients = <p>Please add ingredients to your burger!</p>;
     }
-
+    
     return (
         <div className={classes.Burger}>
             <BurgerIngredient type="bread-top"/>
