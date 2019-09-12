@@ -23,6 +23,12 @@ export const getIngredientsSync = (payload) => {
     }
 }
 
+export const getIngredientsErrorSync = () => {
+    return {
+        type: actionTypes.GET_INGREDIENTS_ERROR
+    }
+}
+
 export const getIngredients = () => {
     let payload = null;
     return dispatch => {
@@ -30,11 +36,12 @@ export const getIngredients = () => {
             .then(response => {
                 payload = { ingredients: response.data };
                 dispatch(getIngredientsSync(payload));
+                dispatch(increaseIngredientsLoader());
             })
             .catch(error => {
                 console.log(error);
-                payload = { ingredients: null };
-                dispatch(getIngredientsSync(payload));
+                dispatch(getIngredientsErrorSync());
+                dispatch(increaseIngredientsLoader());
             });
     }
 }
@@ -46,6 +53,12 @@ export const getIngredientPricesSync = (payload) => {
     }
 }
 
+export const getIngredientPricesErrorSync = () => {
+    return {
+        type: actionTypes.GET_INGREDIENT_PRICES_ERROR
+    }
+}
+
 export const getIngredientPrices = () => {
     let payload = null;
     return dispatch => {
@@ -53,11 +66,30 @@ export const getIngredientPrices = () => {
             .then(response => {
                 payload = { ingredientPrices: response.data };
                 dispatch(getIngredientPricesSync(payload));
+                dispatch(increaseIngredientsLoader());
             })
             .catch(error => {
                 console.log(error);
-                payload = { ingredientPrices: null };
-                dispatch(getIngredientPricesSync(payload));
+                dispatch(getIngredientPricesErrorSync());
+                dispatch(increaseIngredientsLoader());
             });
+    }
+}
+
+export const closeIngredientsErrorModal = () => {
+    return {
+        type: actionTypes.CLOSE_INGREDIENTS_ERROR_MODAL
+    }
+}
+
+export const increaseIngredientsLoader = () => {
+    return {
+        type: actionTypes.INCREASE_INGREDIENTS_LOADER
+    }
+}
+
+export const resetIngredientsLoader = () => {
+    return {
+        type: actionTypes.RESET_INGREDIENTS_LOADER
     }
 }

@@ -26,6 +26,7 @@ class BurgerBuilder extends React.Component {
     }
 
     componentDidMount() {
+        this.props.resetIngredientsLoader();
         this.props.getIngredients();
         this.props.getIngredientPrices();
     }
@@ -40,6 +41,10 @@ class BurgerBuilder extends React.Component {
 
     continueOrderNowHandler = () => {
         this.props.history.push('/checkout');
+    }
+
+    closeIngredientsErrorModal = () => {
+        this.props.closeIngredientsErrorModal();
     }
 
     render () {
@@ -68,7 +73,7 @@ class BurgerBuilder extends React.Component {
 
         let burger = (<Spinner/>);
 
-        if (this.props.ingredients && this.props.ingredientPrices) {
+        if (this.props.loaded == 2) {
             burger = (<React.Fragment>
                 <Burger ingredients={this.props.ingredients} />
                 <BuildControls
@@ -84,10 +89,15 @@ class BurgerBuilder extends React.Component {
 
         return (
             <React.Fragment>
-                <Modal 
+                <Modal
                     show={this.state.showOrderSummary}
                     modalClosed={this.closeOrderNowHandler}>
                     {orderSummary}
+                </Modal>
+                <Modal
+                    show={this.props.ingredientsError || this.props.ingredientPricesError}
+                    modalClosed={this.props.closeIngredientsErrorModal}>
+                    Unable to fetch {this.props.ingredientsError ? 'ingredients' : 'ingredient prices'}. Some features may not work. Please reload the page or contact administrator, if problem persists.
                 </Modal>
                 {burger}
             </React.Fragment>
@@ -99,7 +109,10 @@ const mapStateToProps = state => {
     return {
         ingredients: state.ingredientsNS.ingredients,
         ingredientPrices: state.ingredientsNS.ingredientPrices,
-        totalPrice: state.ingredientsNS.price
+        totalPrice: state.ingredientsNS.price,
+        ingredientsError: state.ingredientsNS.ingredientsError,
+        ingredientPricesError: state.ingredientsNS.ingredientPricesError,
+        loaded: state.ingredientsNS.loaded
     }
 }
 
@@ -108,7 +121,9 @@ const mapDispatchToProps = dispatch => {
         getIngredients: () => dispatch(actions.getIngredients()),
         getIngredientPrices: () => dispatch(actions.getIngredientPrices()),
         addIngredient: (name) => dispatch(actions.addIngredient({ name: name })),
-        removeIngredient: (name) => dispatch(actions.removeIngredient({ name: name }))
+        removeIngredient: (name) => dispatch(actions.removeIngredient({ name: name })),
+        closeIngredientsErrorModal: () => dispatch(actions.closeIngredientsErrorModal()),
+        resetIngredientsLoader: () => dispatch(actions.resetIngredientsLoader())
     }
 }
 

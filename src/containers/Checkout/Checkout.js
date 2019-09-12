@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 import CheckoutSummary from '../../components/Order/CheckoutSummary/CheckoutSummary';
 import ContactData from './ContactData/ContactData';
 import { connect } from 'react-redux';
@@ -15,7 +15,7 @@ class Checkout extends React.Component {
     }
 
     render () {
-        let checkoutSummary = <p>Loading..</p>;
+        let checkoutSummary = <Redirect to="/" />;
         if (this.props.ingredients) {
             checkoutSummary = <CheckoutSummary
                 ingredients={this.props.ingredients}
