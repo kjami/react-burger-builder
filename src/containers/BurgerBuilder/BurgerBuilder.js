@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+/* eslint-disable no-undef, no-unused-vars */
 import React from 'react';
 import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/Burger/BuildControls/BuildControls';
@@ -82,7 +82,7 @@ class BurgerBuilder extends React.Component {
 
         let burger = (<Spinner/>);
 
-        if (this.props.loaded == 2) {
+        if (this.props.loaded === 2 || this.props.loaded === "2") {
             burger = (<React.Fragment>
                 <Burger ingredients={this.props.ingredients} />
                 <BuildControls

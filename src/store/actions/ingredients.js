@@ -39,7 +39,6 @@ export const getIngredients = () => {
                 dispatch(increaseIngredientsLoader());
             })
             .catch(error => {
-                console.log(error);
                 dispatch(getIngredientsErrorSync());
                 dispatch(increaseIngredientsLoader());
             });
@@ -69,7 +68,6 @@ export const getIngredientPrices = () => {
                 dispatch(increaseIngredientsLoader());
             })
             .catch(error => {
-                console.log(error);
                 dispatch(getIngredientPricesErrorSync());
                 dispatch(increaseIngredientsLoader());
             });

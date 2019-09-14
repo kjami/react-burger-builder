@@ -1,7 +1,6 @@
 import React from 'react';
 import Order from '../../components/Order/Order';
 import Spinner from '../../components/UI/Spinner/Spinner';
-import Modal from '../../components/UI/Modal/Modal';
 import * as actions from '../../store/actions/index';
 import { connect } from 'react-redux';
 
