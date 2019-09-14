@@ -10,7 +10,7 @@ import axios from '../../axios-orders';
 import { connect } from 'react-redux';
 import * as actions from '../../store/actions/index';
 
-class BurgerBuilder extends React.Component {
+export class BurgerBuilder extends React.Component {
     state = {
         showOrderSummary: false,
         isOrderPosting: false
