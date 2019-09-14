@@ -31,3 +31,7 @@
     outline: 1px solid red;
     background-color: #fda49a;
 }
+
+.Invalid:focus {
+    outline: 1px solid red;
+}

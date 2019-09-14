@@ -32,7 +32,16 @@ class BurgerBuilder extends React.Component {
     }
 
     orderNowHandler = () => {
-        this.setState({ showOrderSummary: true });
+        if (this.props.isAuthenticated) {
+            this.setState({ showOrderSummary: true });
+        } else {
+            this.props.history.push({
+                pathname: '/auth',
+                state: {
+                    redirect: "checkout"
+                }
+            });
+        }
     }
 
     closeOrderNowHandler = () => {
@@ -83,6 +92,7 @@ class BurgerBuilder extends React.Component {
                     totalPrice={this.props.totalPrice}
                     purchasable={this.updatePurchaseState(this.props.ingredients)}
                     orderNow={this.orderNowHandler}
+                    isAuthenticated={this.props.isAuthenticated}
                 />
             </React.Fragment>);
         }
@@ -112,7 +122,8 @@ const mapStateToProps = state => {
         totalPrice: state.ingredientsNS.price,
         ingredientsError: state.ingredientsNS.ingredientsError,
         ingredientPricesError: state.ingredientsNS.ingredientPricesError,
-        loaded: state.ingredientsNS.loaded
+        loaded: state.ingredientsNS.loaded,
+        isAuthenticated: state.authNS.token !== null
     }
 }
 

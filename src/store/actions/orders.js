@@ -8,27 +8,41 @@ export const getOrdersSync = (payload) => {
     }
 }
 
-export const getOrders = () => {
-    let payload = null;
+export const getOrdersErrorSync = (error) => {
+    return {
+        type: actionTypes.GET_ORDERS_ERROR,
+        error: error
+    }
+}
+
+export const getOrdersRemoveError = () => {
+    return {
+        type: actionTypes.GET_ORDERS_REMOVE_ERROR
+    }
+}
+
+export const getOrders = (payload) => {
     return dispatch => {
-        axios.get("/orders.json")
-            .then(response => {
-                let orders = response.data;
-                if (orders) {
-                    orders = Object.keys(orders).map(id => {
-                        return {
-                            ...orders[id],
-                            id: id,
-                        };
-                    });
-                }
-                payload = { orders: orders || [] };
-                dispatch(getOrdersSync(payload));
-            })
-            .catch(error => {
-                console.log(error);
-                payload = { orders: null };
-                dispatch(getOrdersSync(payload));
-            });
+        if (payload.token && payload.userId) {
+            axios.get('/orders.json?auth=' + payload.token + '&orderBy="userId"&equalTo="' + payload.userId + '"')
+                .then(response => {
+                    let orders = response.data;
+                    if (orders) {
+                        orders = Object.keys(orders).map(id => {
+                            return {
+                                ...orders[id],
+                                id: id,
+                            };
+                        });
+                    }
+                    payload = { orders: orders || [] };
+                    dispatch(getOrdersSync(payload));
+                })
+                .catch(error => {
+                    dispatch(getOrdersErrorSync(error));
+                });
+        } else {
+            dispatch(getOrdersErrorSync(new Error("No token")));
+        }
     }
 }

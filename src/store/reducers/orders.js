@@ -1,7 +1,8 @@
 import * as actionTypes from '../actions/actionTypes';
 
 const initialState = {
-    orders: null
+    orders: null,
+    error: null
 }
 
 const reducer = (state = initialState, action) => {
@@ -9,7 +10,18 @@ const reducer = (state = initialState, action) => {
         case actionTypes.GET_ORDERS:
             return {
                 ...state,
-                orders: action.payload.orders
+                orders: action.payload.orders,
+                error: false
+            }
+        case actionTypes.GET_ORDERS_ERROR:
+            return {
+                ...state, 
+                error: action.error
+            }
+        case actionTypes.GET_ORDERS_REMOVE_ERROR:
+            return {
+                ...state, 
+                error: null
             }
         default:
             return state;

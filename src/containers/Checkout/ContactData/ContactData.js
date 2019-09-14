@@ -6,6 +6,7 @@ import Spinner from '../../../components/UI/Spinner/Spinner'
 import { withRouter } from 'react-router-dom';
 import Input from '../../../components/UI/Input/Input';
 import Modal from '../../../components/UI/Modal/Modal';
+import { connect } from 'react-redux';
 
 class ContactData extends React.Component {
     state = {
@@ -131,6 +132,11 @@ class ContactData extends React.Component {
             isValid = value.length <= rules.maxLength;
         }
 
+        if (isValid && rules.email) {
+            const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            isValid = regex.test(String(value).toLowerCase());
+        }
+
         if (isValid && rules.excludeValues) {
             isValid = rules.excludeValues.indexOf(value) < 0;
         }
@@ -173,19 +179,20 @@ class ContactData extends React.Component {
         this.setState({
             isOrderPosting: true
         });
-        axios.post('/orders.json', order)
-            .then(response => {
-                this.setState({
-                    isOrderPosting: false
+        if (this.props.token) {
+            axios.post('/orders.json?auth=' + this.props.token, { ...order, userId: this.props.userId })
+                .then(response => {
+                    this.setState({
+                        isOrderPosting: false
+                    });
+                    this.props.history.push("/");
+                })
+                .catch(error => {
+                    this.setState({
+                        isOrderPosting: false
+                    });
                 });
-                this.props.history.push("/");
-            })
-            .catch(error => {
-                console.log(error);
-                this.setState({
-                    isOrderPosting: false
-                });
-            });
+        }
     }
 
     modalClosedHandler = () => {
@@ -221,4 +228,11 @@ class ContactData extends React.Component {
     }
 }
 
-export default withRouter(ContactData);
+const mapStateToProps = state => {
+    return {
+        token: state.authNS.token,
+        userId: state.authNS.userId
+    }
+}
+
+export default connect(mapStateToProps)(withRouter(ContactData));

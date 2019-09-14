@@ -8,10 +8,12 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import ingredientReducer from './store/reducers/ingredients';
 import ordersReducer from './store/reducers/orders';
+import authReducer from './store/reducers/auth';
 
 const rootReducer = combineReducers({
     ingredientsNS: ingredientReducer,
-    ordersNS: ordersReducer
+    ordersNS: ordersReducer,
+    authNS: authReducer
 });
 
 // const logger = store => {
